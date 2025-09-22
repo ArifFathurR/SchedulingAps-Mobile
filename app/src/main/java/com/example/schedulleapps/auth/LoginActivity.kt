@@ -18,21 +18,25 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ Cek apakah user sudah login sebelumnya
         val shared = getSharedPreferences("APP", MODE_PRIVATE)
         val token = shared.getString("TOKEN", null)
 
         if (!token.isNullOrEmpty()) {
-            // Token masih ada, langsung ke MainActivity
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        // Lanjut ke tampilan login
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ Listener Register dipisah
+        binding.btnRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+        // ✅ Listener Login tetap di sini
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
@@ -52,7 +56,6 @@ class LoginActivity : AppCompatActivity() {
                         val user = loginResponse?.user
 
                         if (token != null && user != null) {
-                            // Simpan data user & token ke SharedPreferences
                             shared.edit()
                                 .putString("TOKEN", token)
                                 .putInt("USER_ID", user.id)
@@ -61,14 +64,11 @@ class LoginActivity : AppCompatActivity() {
                                 .apply()
 
                             Toast.makeText(this@LoginActivity, "Selamat datang ${user.name}", Toast.LENGTH_SHORT).show()
-
-                            // Pindah ke halaman utama
                             startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                             finish()
                         } else {
                             Toast.makeText(this@LoginActivity, "Login gagal: Data tidak lengkap", Toast.LENGTH_SHORT).show()
                         }
-
                     } else {
                         val errorMessage = response.errorBody()?.string() ?: "Login gagal"
                         Toast.makeText(this@LoginActivity, "Login gagal: $errorMessage", Toast.LENGTH_SHORT).show()

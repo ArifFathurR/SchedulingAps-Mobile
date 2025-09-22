@@ -23,7 +23,7 @@ class HomeFragment : Fragment() {
 
     private var allSchedules: List<Schedule> = emptyList()
     private lateinit var adapter: ScheduleAdapter
-    private var scheduleDates: Set<String> = emptySet() // tanggal yang ada schedule
+    private var scheduleDates: Set<String> = emptySet()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,34 +31,25 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        // Setup RecyclerView
         binding.recyclerSchedules.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ScheduleAdapter(emptyList())
+        adapter = ScheduleAdapter(requireContext(), emptyList())
         binding.recyclerSchedules.adapter = adapter
 
-        // Load data dari API
         loadSchedules()
 
-        // Listener kalender untuk filter tanggal
         binding.kalenderKeg.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
             filterSchedulesByDate(selectedDate)
             if (scheduleDates.contains(selectedDate)) {
-                if (isAdded && context != null) {
-                    Toast.makeText(requireContext(), "Ada schedule di tanggal ini", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(requireContext(), "Ada schedule di tanggal ini", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Listener tombol tx1 untuk menampilkan semua schedule
-        binding.tx1.setOnClickListener {
-            showAllSchedules()
-        }
+        binding.tx1.setOnClickListener { showAllSchedules() }
 
         return binding.root
     }
 
-    // Fungsi load schedule dari API
     private fun loadSchedules() {
         val sharedPref = requireActivity().getSharedPreferences("APP", 0)
         val token = sharedPref.getString("TOKEN", null)
@@ -76,40 +67,29 @@ class HomeFragment : Fragment() {
                 ) {
                     if (response.isSuccessful) {
                         allSchedules = response.body()?.data ?: emptyList()
-                        adapter = ScheduleAdapter(allSchedules)
-                        binding.recyclerSchedules.adapter = adapter
-
-                        // Simpan tanggal yang ada schedule
+                        adapter.updateData(allSchedules)
                         scheduleDates = allSchedules.map { it.tanggal }.toSet()
-                    } else if (isAdded && context != null) {
+                    } else {
                         Toast.makeText(requireContext(), "Gagal memuat data", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
-                    if (isAdded && context != null) {
-                        Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
 
-    // Fungsi filter schedule berdasarkan tanggal
     private fun filterSchedulesByDate(date: String) {
         val filtered = allSchedules.filter { it.tanggal == date }
         if (filtered.isEmpty()) {
-            if (isAdded && context != null) {
-                Toast.makeText(requireContext(), "Tidak ada schedule di tanggal ini", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(requireContext(), "Tidak ada schedule di tanggal ini", Toast.LENGTH_SHORT).show()
         }
-        adapter = ScheduleAdapter(filtered)
-        binding.recyclerSchedules.adapter = adapter
+        adapter.updateData(filtered)
     }
 
-    // Fungsi menampilkan semua schedule
     private fun showAllSchedules() {
-        adapter = ScheduleAdapter(allSchedules)
-        binding.recyclerSchedules.adapter = adapter
+        adapter.updateData(allSchedules)
     }
 
     override fun onDestroyView() {

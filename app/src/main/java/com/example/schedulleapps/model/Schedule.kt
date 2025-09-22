@@ -7,5 +7,8 @@ data class Schedule(
     val jamSelesai: String,
     val namaEvent: String,
     val fotografer_id: Int?,
-    val editor_id: Int?
+    val editor_id: Int?,
+    val catatan: String? = null,
+    val linkGdriveFotografer: String? = null,
+    val linkGdriveEditor: String? = null
 )
