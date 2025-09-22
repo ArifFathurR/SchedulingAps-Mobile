@@ -37,9 +37,7 @@ android {
         viewBinding = true
     }
 }
-
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -56,4 +54,6 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
+    // WorkManager untuk background tasks notifikasi
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
