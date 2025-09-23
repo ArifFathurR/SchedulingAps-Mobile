@@ -62,24 +62,36 @@ class ScheduleAdapter(
             hint = "Catatan"
             setText(schedule.catatan ?: "")
         }
-        val inputFotografer = EditText(context).apply {
-            hint = "Link GDrive Fotografer"
-            setText(schedule.linkGdriveFotografer ?: "")
-        }
-        val inputEditor = EditText(context).apply {
-            hint = "Link GDrive Editor"
-            setText(schedule.linkGdriveEditor ?: "")
-        }
-
         layout.addView(inputCatatan)
-        layout.addView(inputFotografer)
-        layout.addView(inputEditor)
+
+        // ambil role dari sharedPref
+        val sharedPref = context.getSharedPreferences("APP", Context.MODE_PRIVATE)
+        val role = sharedPref.getString("ROLE", null)
+
+        var inputFotografer: EditText? = null
+        var inputEditor: EditText? = null
+
+        when {
+            role.equals("fotografer", ignoreCase = true) -> {
+                inputFotografer = EditText(context).apply {
+                    hint = "Link GDrive Fotografer"
+                    setText(schedule.linkGdriveFotografer ?: "")
+                }
+                layout.addView(inputFotografer)
+            }
+            role.equals("editor", ignoreCase = true) -> {
+                inputEditor = EditText(context).apply {
+                    hint = "Link GDrive Editor"
+                    setText(schedule.linkGdriveEditor ?: "")
+                }
+                layout.addView(inputEditor)
+            }
+        }
 
         AlertDialog.Builder(context)
             .setTitle("Update Schedule")
             .setView(layout)
             .setPositiveButton("Simpan") { _, _ ->
-                val sharedPref = context.getSharedPreferences("APP", 0)
                 val token = sharedPref.getString("TOKEN", null)
 
                 if (token == null) {
@@ -89,8 +101,8 @@ class ScheduleAdapter(
 
                 val request = UpdateScheduleRequest(
                     catatan = inputCatatan.text.toString(),
-                    linkGdriveFotografer = inputFotografer.text.toString(),
-                    linkGdriveEditor = inputEditor.text.toString()
+                    linkGdriveFotografer = inputFotografer?.text?.toString(),
+                    linkGdriveEditor = inputEditor?.text?.toString()
                 )
 
                 ApiClient.instance.updateSchedule(schedule.id, "Bearer $token", request)

@@ -31,12 +31,26 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        // Setup RecyclerView
         binding.recyclerSchedules.layoutManager = LinearLayoutManager(requireContext())
         adapter = ScheduleAdapter(requireContext(), emptyList())
         binding.recyclerSchedules.adapter = adapter
 
+        // Load data pertama kali
         loadSchedules()
 
+        // SwipeRefresh untuk tarik refresh
+        binding.swipeRefresh.setOnRefreshListener {
+            loadSchedules()
+        }
+        binding.swipeRefresh.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
+
+        // Listener CalendarView
         binding.kalenderKeg.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
             filterSchedulesByDate(selectedDate)
@@ -45,6 +59,7 @@ class HomeFragment : Fragment() {
             }
         }
 
+        // Tampilkan semua jadwal saat klik teks
         binding.tx1.setOnClickListener { showAllSchedules() }
 
         return binding.root
@@ -56,6 +71,7 @@ class HomeFragment : Fragment() {
 
         if (token == null) {
             Toast.makeText(requireContext(), "Token tidak ditemukan", Toast.LENGTH_SHORT).show()
+            binding.swipeRefresh.isRefreshing = false
             return
         }
 
@@ -65,6 +81,7 @@ class HomeFragment : Fragment() {
                     call: Call<ScheduleResponse>,
                     response: Response<ScheduleResponse>
                 ) {
+                    binding.swipeRefresh.isRefreshing = false
                     if (response.isSuccessful) {
                         allSchedules = response.body()?.data ?: emptyList()
                         adapter.updateData(allSchedules)
@@ -75,6 +92,7 @@ class HomeFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
+                    binding.swipeRefresh.isRefreshing = false
                     Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })

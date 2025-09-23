@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="role_options">
+        <item>Pilih Role</item>
+        <item>fotografer</item>
+        <item>editor</item>
+    </string-array>
+</resources>

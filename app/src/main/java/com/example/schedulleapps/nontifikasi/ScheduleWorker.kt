@@ -29,6 +29,7 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         scheduleNotifications(response.body()!!.data)
                     }
                 }
+
                 override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
                     Log.e("ScheduleWorker", "API Error: ${t.message}")
                 }
@@ -46,21 +47,43 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                 val dateTime = "${s.tanggal} ${s.jamMulai}"
                 val startTime = sdf.parse(dateTime) ?: continue
 
-                val cal = Calendar.getInstance().apply {
+                val calStart = Calendar.getInstance().apply {
                     time = startTime
-                    add(Calendar.HOUR_OF_DAY, -2) // 2 jam sebelum
                     set(Calendar.SECOND, 0)
                 }
 
-                if (cal.timeInMillis > now) {
+                // =====================
+                // Notifikasi H-3 hari
+                // =====================
+                val calH3 = calStart.clone() as Calendar
+                calH3.add(Calendar.DAY_OF_YEAR, -3)
+
+                if (calH3.timeInMillis > now) {
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
-                        "Pengingat Kegiatan",
-                        "Event: ${s.namaEvent} dimulai jam ${s.jamMulai}",
-                        cal.timeInMillis,
-                        s.id
+                        "Pengingat Kegiatan (H-3)",
+                        "Event: ${s.namaEvent} akan dilaksanakan pada ${s.tanggal} jam ${s.jamMulai}",
+                        calH3.timeInMillis,
+                        s.id * 10 // id unik supaya tidak bentrok dengan notifikasi lain
                     )
                 }
+
+                // =====================
+                // Notifikasi H-2 jam
+                // =====================
+                val calH2Jam = calStart.clone() as Calendar
+                calH2Jam.add(Calendar.HOUR_OF_DAY, -2)
+
+                if (calH2Jam.timeInMillis > now) {
+                    NotificationScheduler.scheduleNotification(
+                        applicationContext,
+                        "Pengingat Kegiatan (H-2 jam)",
+                        "Event: ${s.namaEvent} dimulai jam ${s.jamMulai}",
+                        calH2Jam.timeInMillis,
+                        s.id * 100 // id unik lagi
+                    )
+                }
+
             } catch (e: Exception) {
                 Log.e("ScheduleWorker", "Error parsing: ${e.message}")
             }

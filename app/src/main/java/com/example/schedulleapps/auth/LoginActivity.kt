@@ -21,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
         val shared = getSharedPreferences("APP", MODE_PRIVATE)
         val token = shared.getString("TOKEN", null)
 
+        // Kalau sudah login, langsung masuk MainActivity
         if (!token.isNullOrEmpty()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -30,13 +31,13 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ Listener Register dipisah
+        // ✅ Tombol register
         binding.btnRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
-        // ✅ Listener Login tetap di sini
+        // ✅ Tombol login
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
@@ -56,11 +57,13 @@ class LoginActivity : AppCompatActivity() {
                         val user = loginResponse?.user
 
                         if (token != null && user != null) {
+                            // ✅ Simpan semua data user + role
                             shared.edit()
                                 .putString("TOKEN", token)
                                 .putInt("USER_ID", user.id)
                                 .putString("USER_NAME", user.name)
                                 .putString("USER_EMAIL", user.email)
+                                .putString("ROLE", user.role) // simpan role
                                 .apply()
 
                             Toast.makeText(this@LoginActivity, "Selamat datang ${user.name}", Toast.LENGTH_SHORT).show()
