@@ -64,8 +64,9 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         "Pengingat Kegiatan (H-3)",
                         "Event: ${s.namaEvent} akan dilaksanakan pada ${s.tanggal} jam ${s.jamMulai}",
                         calH3.timeInMillis,
-                        s.id * 10 // id unik supaya tidak bentrok dengan notifikasi lain
+                        s.id * 10
                     )
+                    Log.d("ScheduleWorker", "Notifikasi H-3 hari dijadwalkan untuk event ${s.namaEvent} pada ${calH3.time}")
                 }
 
                 // =====================
@@ -80,8 +81,26 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         "Pengingat Kegiatan (H-2 jam)",
                         "Event: ${s.namaEvent} dimulai jam ${s.jamMulai}",
                         calH2Jam.timeInMillis,
-                        s.id * 100 // id unik lagi
+                        s.id * 100
                     )
+                    Log.d("ScheduleWorker", "Notifikasi H-2 jam dijadwalkan untuk event ${s.namaEvent} pada ${calH2Jam.time}")
+                }
+
+                // =====================
+                // Notifikasi H-2 menit
+                // =====================
+                val calH2Menit = calStart.clone() as Calendar
+                calH2Menit.add(Calendar.MINUTE, -2)
+
+                if (calH2Menit.timeInMillis > now) {
+                    NotificationScheduler.scheduleNotification(
+                        applicationContext,
+                        "Pengingat Kegiatan (H-2 menit)",
+                        "Event: ${s.namaEvent} sebentar lagi dimulai (${s.jamMulai})",
+                        calH2Menit.timeInMillis,
+                        s.id * 1000
+                    )
+                    Log.d("ScheduleWorker", "Notifikasi H-2 menit dijadwalkan untuk event ${s.namaEvent} pada ${calH2Menit.time}")
                 }
 
             } catch (e: Exception) {
