@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        // Minta izin notifikasi
+        // Izin notifikasi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
             } else startWorker()
         } else startWorker()
 
-        // Panggil load profile
         loadProfile()
     }
 
@@ -71,7 +70,6 @@ class MainActivity : AppCompatActivity() {
     private fun loadProfile() {
         val prefs = getSharedPreferences("APP", MODE_PRIVATE)
         val token = prefs.getString("TOKEN", null)
-
         if (token.isNullOrEmpty()) {
             Toast.makeText(this, "User belum login!", Toast.LENGTH_SHORT).show()
             return
@@ -88,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                         if (profile != null) {
                             binding.etNama.text = profile.nama
                             binding.role.text = profile.role
-
                             if (!profile.photo.isNullOrEmpty()) {
                                 Glide.with(this@MainActivity)
                                     .load(profile.photo)
@@ -96,20 +93,12 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Gagal memuat profil",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@MainActivity, "Gagal memuat profil", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Error: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }

@@ -24,7 +24,10 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
 
         ApiClient.instance.getSchedules("Bearer $token")
             .enqueue(object : Callback<ScheduleResponse> {
-                override fun onResponse(call: Call<ScheduleResponse>, response: Response<ScheduleResponse>) {
+                override fun onResponse(
+                    call: Call<ScheduleResponse>,
+                    response: Response<ScheduleResponse>
+                ) {
                     if (response.isSuccessful && response.body() != null) {
                         scheduleNotifications(response.body()!!.data)
                     }
@@ -46,18 +49,14 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
             try {
                 val dateTime = "${s.tanggal} ${s.jamMulai}"
                 val startTime = sdf.parse(dateTime) ?: continue
-
                 val calStart = Calendar.getInstance().apply {
                     time = startTime
                     set(Calendar.SECOND, 0)
                 }
 
-                // =====================
-                // Notifikasi H-3 hari
-                // =====================
+                // H-3 hari
                 val calH3 = calStart.clone() as Calendar
                 calH3.add(Calendar.DAY_OF_YEAR, -3)
-
                 if (calH3.timeInMillis > now) {
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
@@ -66,15 +65,11 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         calH3.timeInMillis,
                         s.id * 10
                     )
-                    Log.d("ScheduleWorker", "Notifikasi H-3 hari dijadwalkan untuk event ${s.namaEvent} pada ${calH3.time}")
                 }
 
-                // =====================
-                // Notifikasi H-2 jam
-                // =====================
+                // H-2 jam
                 val calH2Jam = calStart.clone() as Calendar
                 calH2Jam.add(Calendar.HOUR_OF_DAY, -2)
-
                 if (calH2Jam.timeInMillis > now) {
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
@@ -83,15 +78,11 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         calH2Jam.timeInMillis,
                         s.id * 100
                     )
-                    Log.d("ScheduleWorker", "Notifikasi H-2 jam dijadwalkan untuk event ${s.namaEvent} pada ${calH2Jam.time}")
                 }
 
-                // =====================
-                // Notifikasi H-2 menit
-                // =====================
+                // H-2 menit
                 val calH2Menit = calStart.clone() as Calendar
                 calH2Menit.add(Calendar.MINUTE, -2)
-
                 if (calH2Menit.timeInMillis > now) {
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
@@ -100,7 +91,6 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                         calH2Menit.timeInMillis,
                         s.id * 1000
                     )
-                    Log.d("ScheduleWorker", "Notifikasi H-2 menit dijadwalkan untuk event ${s.namaEvent} pada ${calH2Menit.time}")
                 }
 
             } catch (e: Exception) {

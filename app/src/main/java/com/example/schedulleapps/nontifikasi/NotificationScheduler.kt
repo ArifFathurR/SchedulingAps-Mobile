@@ -13,7 +13,13 @@ import com.example.schedulleapps.R
 object NotificationScheduler {
     private const val CHANNEL_ID = "schedule_channel"
 
-    fun scheduleNotification(context: Context, title: String, message: String, triggerTime: Long, requestCode: Int) {
+    fun scheduleNotification(
+        context: Context,
+        title: String,
+        message: String,
+        triggerTime: Long,
+        requestCode: Int
+    ) {
         createNotificationChannel(context)
 
         val intent = Intent(context, NotificationReceiver::class.java).apply {
@@ -23,7 +29,7 @@ object NotificationScheduler {
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            requestCode, // gunakan id schedule agar unik
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -50,7 +56,7 @@ object NotificationScheduler {
 
     fun showNotification(context: Context, title: String, message: String) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) //logo nontifikasi apps
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
