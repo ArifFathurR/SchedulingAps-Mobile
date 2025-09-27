@@ -7,5 +7,5 @@ data class ProfileData(
     val alamat: String?,
     val no_hp: String?,
     val email: String,
-    val photo: String?
+    val photo: String?,
 )

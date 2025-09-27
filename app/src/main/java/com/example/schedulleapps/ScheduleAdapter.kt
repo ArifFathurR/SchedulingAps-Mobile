@@ -1,15 +1,16 @@
 package com.example.schedulleapps
 
-import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedulleapps.api.ApiClient
 import com.example.schedulleapps.databinding.ItemScheduleBinding
+import com.example.schedulleapps.databinding.ActivityDetailScheduleBinding
 import com.example.schedulleapps.model.Schedule
 import com.example.schedulleapps.model.UpdateScheduleRequest
 import com.example.schedulleapps.model.UpdateScheduleResponse
@@ -37,11 +38,16 @@ class ScheduleAdapter(
             tvNamaEvent.text = schedule.namaEvent
             tvTanggal.text = schedule.tanggal
             tvJam.text = "${schedule.jamMulai} - ${schedule.jamSelesai}"
-        }
 
-        // Klik → buka dialog update
-        holder.itemView.setOnClickListener {
-            showUpdateDialog(schedule)
+            // klik item untuk update
+            root.setOnClickListener {
+                showUpdateDialog(schedule)
+            }
+
+            // klik btnDetail untuk lihat detail
+            btnDetail.setOnClickListener {
+                showDetailDialog(schedule)
+            }
         }
     }
 
@@ -52,6 +58,9 @@ class ScheduleAdapter(
         notifyDataSetChanged()
     }
 
+    /**
+     * Menampilkan dialog update (biarkan seperti kode lama)
+     */
     private fun showUpdateDialog(schedule: Schedule) {
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -64,7 +73,6 @@ class ScheduleAdapter(
         }
         layout.addView(inputCatatan)
 
-        // ambil role dari sharedPref
         val sharedPref = context.getSharedPreferences("APP", Context.MODE_PRIVATE)
         val role = sharedPref.getString("ROLE", null)
 
@@ -125,5 +133,31 @@ class ScheduleAdapter(
             }
             .setNegativeButton("Batal", null)
             .show()
+    }
+
+    /**
+     * Menampilkan popup detail (pakai layout activity_detail_schedule.xml)
+     */
+    private fun showDetailDialog(schedule: Schedule) {
+        val detailBinding =
+            ActivityDetailScheduleBinding.inflate(LayoutInflater.from(context))
+
+        detailBinding.apply {
+            tvNamaEventDetail.text = schedule.namaEvent
+            tvTanggalDetail.text = schedule.tanggal
+            tvJamDetail.text = "${schedule.jamMulai} - ${schedule.jamSelesai}"
+//            tvDurasi.text = schedule.durasi ?: "-"
+            tvLapangan.text = schedule.lapangan ?: "-"
+        }
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(detailBinding.root)
+            .setCancelable(false)
+            .create()
+
+        detailBinding.btnClose.setOnClickListener { dialog.dismiss() }
+        detailBinding.btnSelesai.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 }

@@ -52,7 +52,11 @@ interface ApiService {
         @Part("nama") nama: RequestBody,
         @Part("alamat") alamat: RequestBody?,
         @Part("no_hp") noHp: RequestBody?,
+        @Part("current_password") currentPassword: RequestBody?,
+        @Part("password") password: RequestBody?,
+        @Part("password_confirmation") passwordConfirmation: RequestBody?,
         @Part photo: MultipartBody.Part? // untuk upload foto opsional
     ): Call<ProfileResponse>
+
 
 }

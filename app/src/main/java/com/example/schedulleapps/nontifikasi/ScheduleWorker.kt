@@ -20,6 +20,8 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
     override fun doWork(): Result {
         val prefs = applicationContext.getSharedPreferences("APP", Context.MODE_PRIVATE)
         val token = prefs.getString("TOKEN", "") ?: ""
+        val role = prefs.getString("ROLE", "") ?: ""
+
         if (token.isEmpty()) return Result.retry()
 
         ApiClient.instance.getSchedules("Bearer $token")
@@ -29,7 +31,15 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                     response: Response<ScheduleResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
-                        scheduleNotifications(response.body()!!.data)
+                        val schedules = response.body()!!.data
+
+                        if (role.equals("admin", true)) {
+                            Log.d("ScheduleWorker", "Admin login → total jadwal: ${schedules.size}")
+                            scheduleNotifications(schedules) // ✅ semua dapat notif
+                        } else {
+                            Log.d("ScheduleWorker", "User biasa → total jadwal: ${schedules.size}")
+                            scheduleNotifications(schedules) // ✅ sudah difilter backend
+                        }
                     }
                 }
 
@@ -61,21 +71,22 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
                         "Pengingat Kegiatan (H-3)",
-                        "Event: ${s.namaEvent} akan dilaksanakan pada ${s.tanggal} jam ${s.jamMulai}",
+                        "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}",
                         calH3.timeInMillis,
                         s.id * 10
                     )
                 }
 
+                // H-1 hari
                 val calH1 = calStart.clone() as Calendar
                 calH1.add(Calendar.DAY_OF_YEAR, -1)
                 if (calH1.timeInMillis > now) {
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
-                        "Pengingat Kegiatan (H-3)",
-                        "Event: ${s.namaEvent} akan dilaksanakan pada ${s.tanggal} jam ${s.jamMulai}",
+                        "Pengingat Kegiatan (H-1)",
+                        "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}",
                         calH1.timeInMillis,
-                        s.id * 10
+                        s.id * 20
                     )
                 }
 
@@ -99,7 +110,7 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                     NotificationScheduler.scheduleNotification(
                         applicationContext,
                         "Pengingat Kegiatan (H-2 menit)",
-                        "Event: ${s.namaEvent} sebentar lagi dimulai (${s.jamMulai})",
+                        "Event: ${s.namaEvent} sebentar lagi (${s.jamMulai})",
                         calH2Menit.timeInMillis,
                         s.id * 1000
                     )
@@ -111,3 +122,4 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 }
+

@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8F9FA"
-    tools:context=".ui.dashboard.DashboardFragment">
+    tools:context=".ui.profile.ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header Section dengan Background Gradient -->
+        <!-- Header dengan foto -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,6 @@
             android:padding="24dp"
             android:gravity="center">
 
-            <!-- Profile Image dengan Border -->
             <androidx.cardview.widget.CardView
                 android:layout_width="140dp"
                 android:layout_height="140dp"
@@ -36,10 +35,8 @@
                     android:src="@mipmap/ic_launcher_round"
                     android:scaleType="centerCrop"
                     android:contentDescription="Foto Profil" />
-
             </androidx.cardview.widget.CardView>
 
-            <!-- Camera Icon Overlay -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnChoosePhoto"
                 android:layout_width="wrap_content"
@@ -60,10 +57,9 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp" />
-
         </LinearLayout>
 
-        <!-- Form Section -->
+        <!-- Form -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +67,6 @@
             android:padding="24dp"
             android:layout_marginTop="-20dp">
 
-            <!-- Card Container untuk Form -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,13 +80,11 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
-                    <!-- Input Nama dengan Icon -->
+                    <!-- Nama -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -99,18 +92,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Nama Lengkap"
-                            android:inputType="textPersonName"
-                            android:textSize="16sp" />
-
+                            android:inputType="textPersonName" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Input Alamat dengan Icon -->
+                    <!-- Alamat -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -119,19 +108,15 @@
                             android:layout_height="wrap_content"
                             android:hint="Alamat"
                             android:inputType="textPostalAddress"
-                            android:textSize="16sp"
                             android:minLines="2"
                             android:maxLines="3" />
-
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Input No HP dengan Icon -->
+                    <!-- No HP -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -139,19 +124,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Nomor Telepon"
-                            android:inputType="phone"
-                            android:textSize="16sp" />
-
+                            android:inputType="phone" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Email (readonly) dengan Icon -->
+                    <!-- Email -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp"
-                        app:startIconDrawable="@drawable/ic_email"
-                        app:boxStrokeColor="@color/black"
-                        app:hintTextColor="@color/black"
+                        android:layout_marginBottom="16dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -159,18 +139,59 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Email"
-                            android:inputType="textEmailAddress"
-                            android:textSize="16sp"
                             android:enabled="false"
-                            android:textColor="@color/black" />
+                            android:inputType="textEmailAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Current Password -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCurrentPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Password Lama"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Password Baru -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNewPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Password Baru"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Konfirmasi Password -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etConfirmPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Konfirmasi Password Baru"
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <!-- Tombol Simpan dengan Material Design -->
+            <!-- Tombol Simpan -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"
                 android:layout_width="match_parent"
@@ -183,12 +204,7 @@
                 app:iconPadding="8dp"
                 app:cornerRadius="12dp"
                 app:backgroundTint="@color/black"
-                android:textColor="@android:color/white"
-                app:elevation="4dp"
-                android:layout_marginBottom="24dp" />
-
+                android:textColor="@android:color/white" />
         </LinearLayout>
-
     </LinearLayout>
-
 </ScrollView>

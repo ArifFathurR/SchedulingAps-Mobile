@@ -17,6 +17,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,8 +41,7 @@ class DashboardFragment : Fragment() {
         loadProfile()
 
         binding.btnChoosePhoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
+            val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
             startActivityForResult(intent, 100)
         }
 
@@ -53,7 +53,8 @@ class DashboardFragment : Fragment() {
     }
 
     private fun loadProfile() {
-        val token = requireActivity().getSharedPreferences("APP", 0)
+        val token = requireActivity()
+            .getSharedPreferences("APP", 0)
             .getString("TOKEN", null)
 
         if (token == null) {
@@ -92,13 +93,24 @@ class DashboardFragment : Fragment() {
     }
 
     private fun updateProfile() {
-        val token = requireActivity().getSharedPreferences("APP", 0)
+        val token = requireActivity()
+            .getSharedPreferences("APP", 0)
             .getString("TOKEN", null) ?: return
 
-        val nama = RequestBody.create("text/plain".toMediaTypeOrNull(), binding.etNama.text.toString())
-        val alamat = RequestBody.create("text/plain".toMediaTypeOrNull(), binding.etAlamat.text.toString())
-        val noHp = RequestBody.create("text/plain".toMediaTypeOrNull(), binding.etNoHp.text.toString())
+        // Data teks utama
+        val nama = binding.etNama.text.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        val alamat = binding.etAlamat.text.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        val noHp = binding.etNoHp.text.toString().toRequestBody("text/plain".toMediaTypeOrNull())
 
+        // Data password (boleh kosong kalau user tidak ganti password)
+        val currentPassword = binding.etCurrentPassword.text.toString()
+            .takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val newPassword = binding.etNewPassword.text.toString()
+            .takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val confirmPassword = binding.etConfirmPassword.text.toString()
+            .takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+        // Foto opsional
         var photoPart: MultipartBody.Part? = null
         imageUri?.let { uri ->
             val file = createFileFromUri(uri)
@@ -108,24 +120,33 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        ApiClient.instance.updateProfile(userId, "Bearer $token", nama, alamat, noHp, photoPart)
-            .enqueue(object : Callback<ProfileResponse> {
-                override fun onResponse(
-                    call: Call<ProfileResponse>,
-                    response: Response<ProfileResponse>
-                ) {
-                    if (response.isSuccessful && response.body()?.status == true) {
-                        Toast.makeText(requireContext(), "Profil diperbarui", Toast.LENGTH_SHORT).show()
-                        loadProfile()
-                    } else {
-                        Toast.makeText(requireContext(), "Gagal update profil", Toast.LENGTH_SHORT).show()
-                    }
+        ApiClient.instance.updateProfile(
+            userId,
+            "Bearer $token",
+            nama,
+            alamat,
+            noHp,
+            currentPassword,
+            newPassword,
+            confirmPassword,
+            photoPart
+        ).enqueue(object : Callback<ProfileResponse> {
+            override fun onResponse(
+                call: Call<ProfileResponse>,
+                response: Response<ProfileResponse>
+            ) {
+                if (response.isSuccessful && response.body()?.status == true) {
+                    Toast.makeText(requireContext(), "Profil diperbarui", Toast.LENGTH_SHORT).show()
+                    loadProfile()
+                } else {
+                    Toast.makeText(requireContext(), "Gagal update profil", Toast.LENGTH_SHORT).show()
                 }
+            }
 
-                override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun createFileFromUri(uri: Uri): File? {
@@ -154,4 +175,5 @@ class DashboardFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

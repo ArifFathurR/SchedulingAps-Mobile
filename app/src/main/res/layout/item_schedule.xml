@@ -15,34 +15,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-        <!-- Left Side - Date Indicator -->
-        <LinearLayout
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@color/white"
-            android:gravity="center"
-            android:orientation="vertical">
+        <!-- Left Side - Calendar Icon -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/black">
 
             <ImageView
-                android:id="@+id/tvDay"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="24"
+                android:id="@+id/ivCalendar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
                 android:src="@drawable/calendar"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                app:tint="@color/white" />
 
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Right Side - Event Details -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical">
 
             <!-- Event Name -->
@@ -61,23 +61,23 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
                     android:src="@drawable/ic_time"
-                    android:tint="@color/purple_500" />
+                    app:tint="@color/purple_500" />
 
                 <TextView
                     android:id="@+id/tvJam"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="4dp"
                     android:text="07:00 - 08:00"
-                    android:textColor="@color/purple_500"
+                    android:textColor="@color/black"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -88,23 +88,27 @@
                 android:id="@+id/tvTanggal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="4dp"
                 android:text="24 September 2025"
                 android:textColor="#666666"
                 android:textSize="12sp" />
 
-            <!-- Status/Role Indicator -->
-
-
         </LinearLayout>
 
-        <!-- Action Arrow -->
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_arrow_right"
-            android:tint="@color/purple_700" />
+        <!-- Detail Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Detail"
+            android:textSize="11sp"
+            android:textAllCaps="false"
+            app:cornerRadius="6dp"
+            android:backgroundTint="@color/black"
+            android:paddingHorizontal="12dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            app:iconPadding="0dp" />
 
     </LinearLayout>
 
