@@ -67,6 +67,18 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                     )
                 }
 
+                val calH1 = calStart.clone() as Calendar
+                calH1.add(Calendar.DAY_OF_YEAR, -1)
+                if (calH1.timeInMillis > now) {
+                    NotificationScheduler.scheduleNotification(
+                        applicationContext,
+                        "Pengingat Kegiatan (H-3)",
+                        "Event: ${s.namaEvent} akan dilaksanakan pada ${s.tanggal} jam ${s.jamMulai}",
+                        calH1.timeInMillis,
+                        s.id * 10
+                    )
+                }
+
                 // H-2 jam
                 val calH2Jam = calStart.clone() as Calendar
                 calH2Jam.add(Calendar.HOUR_OF_DAY, -2)

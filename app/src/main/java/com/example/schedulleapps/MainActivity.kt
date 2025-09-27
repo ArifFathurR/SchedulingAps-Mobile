@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startWorker() {
-        val workRequest = PeriodicWorkRequestBuilder<ScheduleWorker>(1, TimeUnit.HOURS).build()
+        val workRequest = PeriodicWorkRequestBuilder<ScheduleWorker>(15, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this).enqueue(workRequest)
     }
 
