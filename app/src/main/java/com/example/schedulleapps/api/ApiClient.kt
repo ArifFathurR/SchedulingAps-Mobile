@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:8000/api/" // Ganti IP jika real device
+    private const val BASE_URL = "https://actsnap.my.id/api/" // Ganti IP jika real device
 
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

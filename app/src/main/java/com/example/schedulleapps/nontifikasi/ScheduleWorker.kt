@@ -6,11 +6,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.schedulleapps.api.ApiClient
 import com.example.schedulleapps.model.Schedule
-import com.example.schedulleapps.model.ScheduleResponse
 import com.example.schedulleapps.nontifikasi.NotificationScheduler
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,34 +20,57 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
 
         if (token.isEmpty()) return Result.retry()
 
-        ApiClient.instance.getSchedules("Bearer $token")
-            .enqueue(object : Callback<ScheduleResponse> {
-                override fun onResponse(
-                    call: Call<ScheduleResponse>,
-                    response: Response<ScheduleResponse>
-                ) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val schedules = response.body()!!.data
+        try {
+            val response = ApiClient.instance.getSchedules("Bearer $token").execute()
+            if (response.isSuccessful && response.body() != null) {
+                val schedules = response.body()!!.data
+                Log.d("ScheduleWorker", "Role: $role → total jadwal: ${schedules.size}")
 
-                        if (role.equals("admin", true)) {
-                            Log.d("ScheduleWorker", "Admin login → total jadwal: ${schedules.size}")
-                            scheduleNotifications(schedules) // ✅ semua dapat notif
-                        } else {
-                            Log.d("ScheduleWorker", "User biasa → total jadwal: ${schedules.size}")
-                            scheduleNotifications(schedules) // ✅ sudah difilter backend
-                        }
-                    }
-                }
+                // 🔹 Cek apakah ada schedule baru
+                checkNewSchedules(schedules)
 
-                override fun onFailure(call: Call<ScheduleResponse>, t: Throwable) {
-                    Log.e("ScheduleWorker", "API Error: ${t.message}")
-                }
-            })
+                // 🔹 Semua role tetap dapat notifikasi pengingat
+                scheduleNotifications(role, schedules)
+            } else {
+                Log.e("ScheduleWorker", "API Response failed: ${response.code()}")
+                return Result.retry()
+            }
+        } catch (e: Exception) {
+            Log.e("ScheduleWorker", "API Error: ${e.message}")
+            return Result.retry()
+        }
 
         return Result.success()
     }
 
-    private fun scheduleNotifications(schedules: List<Schedule>) {
+    /**
+     * Cek apakah ada schedule baru dibandingkan dengan yang tersimpan di SharedPreferences
+     */
+    private fun checkNewSchedules(schedules: List<Schedule>) {
+        val prefs = applicationContext.getSharedPreferences("APP", Context.MODE_PRIVATE)
+        val savedIds = prefs.getStringSet("SAVED_SCHEDULE_IDS", emptySet())?.toMutableSet() ?: mutableSetOf()
+
+        val newSchedules = schedules.filter { !savedIds.contains(it.id.toString()) }
+
+        if (newSchedules.isNotEmpty()) {
+            for (s in newSchedules) {
+                // Kirim notifikasi untuk schedule baru
+                NotificationScheduler.showNotification(
+                    applicationContext,
+                    "Jadwal Baru",
+                    "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}"
+                )
+                Log.d("ScheduleWorker", "Notif jadwal baru dikirim untuk schedule ${s.id}")
+
+                // Simpan id ke SharedPreferences supaya tidak notifikasi ulang
+                savedIds.add(s.id.toString())
+            }
+
+            prefs.edit().putStringSet("SAVED_SCHEDULE_IDS", savedIds).apply()
+        }
+    }
+
+    private fun scheduleNotifications(role: String, schedules: List<Schedule>) {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         val now = System.currentTimeMillis()
 
@@ -65,61 +84,59 @@ class ScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
                 }
 
                 // H-3 hari
-                val calH3 = calStart.clone() as Calendar
-                calH3.add(Calendar.DAY_OF_YEAR, -3)
-                if (calH3.timeInMillis > now) {
-                    NotificationScheduler.scheduleNotification(
-                        applicationContext,
-                        "Pengingat Kegiatan (H-3)",
-                        "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}",
-                        calH3.timeInMillis,
-                        s.id * 10
-                    )
-                }
-
+                scheduleIfFuture(calStart.clone() as Calendar, -3, "H-3", s, now)
                 // H-1 hari
-                val calH1 = calStart.clone() as Calendar
-                calH1.add(Calendar.DAY_OF_YEAR, -1)
-                if (calH1.timeInMillis > now) {
-                    NotificationScheduler.scheduleNotification(
-                        applicationContext,
-                        "Pengingat Kegiatan (H-1)",
-                        "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}",
-                        calH1.timeInMillis,
-                        s.id * 20
-                    )
-                }
-
+                scheduleIfFuture(calStart.clone() as Calendar, -1, "H-1", s, now)
                 // H-2 jam
-                val calH2Jam = calStart.clone() as Calendar
-                calH2Jam.add(Calendar.HOUR_OF_DAY, -2)
-                if (calH2Jam.timeInMillis > now) {
-                    NotificationScheduler.scheduleNotification(
-                        applicationContext,
-                        "Pengingat Kegiatan (H-2 jam)",
-                        "Event: ${s.namaEvent} dimulai jam ${s.jamMulai}",
-                        calH2Jam.timeInMillis,
-                        s.id * 100
-                    )
-                }
-
+                scheduleIfFutureHour(calStart.clone() as Calendar, -2, "H-2 jam", s, now)
                 // H-2 menit
-                val calH2Menit = calStart.clone() as Calendar
-                calH2Menit.add(Calendar.MINUTE, -2)
-                if (calH2Menit.timeInMillis > now) {
-                    NotificationScheduler.scheduleNotification(
-                        applicationContext,
-                        "Pengingat Kegiatan (H-2 menit)",
-                        "Event: ${s.namaEvent} sebentar lagi (${s.jamMulai})",
-                        calH2Menit.timeInMillis,
-                        s.id * 1000
-                    )
-                }
+                scheduleIfFutureMinute(calStart.clone() as Calendar, -2, "H-2 menit", s, now)
 
             } catch (e: Exception) {
-                Log.e("ScheduleWorker", "Error parsing: ${e.message}")
+                Log.e("ScheduleWorker", "Error parsing schedule ${s.id}: ${e.message}")
             }
         }
     }
-}
 
+    private fun scheduleIfFuture(cal: Calendar, daysOffset: Int, prefix: String, s: Schedule, now: Long) {
+        cal.add(Calendar.DAY_OF_YEAR, daysOffset)
+        if (cal.timeInMillis > now) {
+            NotificationScheduler.scheduleNotification(
+                applicationContext,
+                "Pengingat Kegiatan ($prefix)",
+                "Event: ${s.namaEvent} pada ${s.tanggal} jam ${s.jamMulai}",
+                cal.timeInMillis,
+                s.id * 1000 + daysOffset
+            )
+            Log.d("ScheduleWorker", "Notif $prefix dijadwalkan untuk schedule ${s.id}")
+        }
+    }
+
+    private fun scheduleIfFutureHour(cal: Calendar, hoursOffset: Int, prefix: String, s: Schedule, now: Long) {
+        cal.add(Calendar.HOUR_OF_DAY, hoursOffset)
+        if (cal.timeInMillis > now) {
+            NotificationScheduler.scheduleNotification(
+                applicationContext,
+                "Pengingat Kegiatan ($prefix)",
+                "Event: ${s.namaEvent} dimulai jam ${s.jamMulai}",
+                cal.timeInMillis,
+                s.id * 10000 + hoursOffset
+            )
+            Log.d("ScheduleWorker", "Notif $prefix dijadwalkan untuk schedule ${s.id}")
+        }
+    }
+
+    private fun scheduleIfFutureMinute(cal: Calendar, minutesOffset: Int, prefix: String, s: Schedule, now: Long) {
+        cal.add(Calendar.MINUTE, minutesOffset)
+        if (cal.timeInMillis > now) {
+            NotificationScheduler.scheduleNotification(
+                applicationContext,
+                "Pengingat Kegiatan ($prefix)",
+                "Event: ${s.namaEvent} sebentar lagi (${s.jamMulai})",
+                cal.timeInMillis,
+                s.id * 100000 + minutesOffset
+            )
+            Log.d("ScheduleWorker", "Notif $prefix dijadwalkan untuk schedule ${s.id}")
+        }
+    }
+}

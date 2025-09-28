@@ -204,7 +204,7 @@
                         android:id="@+id/tvDurasi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1 Jam"
+                        android:text="1 Sesi/Match "
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"
