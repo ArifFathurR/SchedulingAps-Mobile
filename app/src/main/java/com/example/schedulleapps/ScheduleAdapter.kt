@@ -73,56 +73,28 @@ class ScheduleAdapter(
         }
         layout.addView(inputCatatan)
 
+        val inputLink = EditText(context).apply {
+            hint = "Link GDrive"
+            setText(schedule.linkGdrive ?: "")
+        }
+        layout.addView(inputLink)
+
         val sharedPref = context.getSharedPreferences("APP", Context.MODE_PRIVATE)
-        val role = sharedPref.getString("ROLE", null)
-
-        val inputFotografer = EditText(context).apply {
-            hint = "Link GDrive Fotografer"
-            setText(schedule.linkGdriveFotografer ?: "")
-        }
-
-        val inputEditor = EditText(context).apply {
-            hint = "Link GDrive Editor"
-            setText(schedule.linkGdriveEditor ?: "")
-        }
-
-        // Tambahkan input sesuai role
-        when {
-            role.equals("fotografer", ignoreCase = true) -> layout.addView(inputFotografer)
-            role.equals("editor", ignoreCase = true) -> layout.addView(inputEditor)
-            role.equals("admin", ignoreCase = true) -> {
-                layout.addView(inputFotografer)
-                layout.addView(inputEditor)
-            }
-        }
+        val token = sharedPref.getString("TOKEN", null)
 
         AlertDialog.Builder(context)
             .setTitle("Update Schedule")
             .setView(layout)
             .setPositiveButton("Simpan") { _, _ ->
-                val token = sharedPref.getString("TOKEN", null)
                 if (token == null) {
                     Toast.makeText(context, "Token tidak ditemukan", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
-                // Kirim field hanya sesuai role
-                val request = when {
-                    role.equals("fotografer", ignoreCase = true) -> UpdateScheduleRequest(
-                        catatan = inputCatatan.text.toString(),
-                        linkGdriveFotografer = inputFotografer.text.toString()
-                    )
-                    role.equals("editor", ignoreCase = true) -> UpdateScheduleRequest(
-                        catatan = inputCatatan.text.toString(),
-                        linkGdriveEditor = inputEditor.text.toString()
-                    )
-                    role.equals("admin", ignoreCase = true) -> UpdateScheduleRequest(
-                        catatan = inputCatatan.text.toString(),
-                        linkGdriveFotografer = inputFotografer.text.toString(),
-                        linkGdriveEditor = inputEditor.text.toString()
-                    )
-                    else -> UpdateScheduleRequest(catatan = inputCatatan.text.toString())
-                }
+                val request = UpdateScheduleRequest(
+                    catatan = inputCatatan.text.toString(),
+                    linkGdrive = inputLink.text.toString()
+                )
 
                 ApiClient.instance.updateSchedule(schedule.id, "Bearer $token", request)
                     .enqueue(object : Callback<UpdateScheduleResponse> {
@@ -133,16 +105,23 @@ class ScheduleAdapter(
                             if (response.isSuccessful) {
                                 Toast.makeText(context, "Update berhasil", Toast.LENGTH_SHORT).show()
                             } else {
-                                // Cetak error code dan body ke log
                                 val errorBody = response.errorBody()?.string()
-                                android.util.Log.e("UpdateSchedule", "Gagal update: code=${response.code()}, body=$errorBody")
-                                Toast.makeText(context, "Gagal update: ${response.code()}", Toast.LENGTH_LONG).show()
+                                android.util.Log.e(
+                                    "UpdateSchedule",
+                                    "Gagal update: code=${response.code()}, body=$errorBody"
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Gagal update: ${response.code()}",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
 
                         override fun onFailure(call: Call<UpdateScheduleResponse>, t: Throwable) {
                             android.util.Log.e("UpdateSchedule", "Error network: ${t.message}")
-                            Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     })
 
@@ -162,7 +141,9 @@ class ScheduleAdapter(
             tvNamaEventDetail.text = schedule.namaEvent
             tvTanggalDetail.text = schedule.tanggal
             tvJamDetail.text = "${schedule.jamMulai} - ${schedule.jamSelesai}"
-            tvLapangan.text = schedule.lapangan ?: "-"
+            tvLapangan.text = schedule.lapangan?.nama_lapangan ?: "-"   // ✅ lapangan object
+//            tvCatatan.text = schedule.catatan ?: "-"
+//            tvLink.text = schedule.linkGdrive ?: "-"
         }
 
         val dialog = AlertDialog.Builder(context)
