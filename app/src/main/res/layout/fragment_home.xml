@@ -2,44 +2,119 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
 
     <CalendarView
         android:id="@+id/kalender_keg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:showWeekNumber="false"
+        android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tx1"
+    <!-- Container Tab dengan Background Pills - Ukuran Lebih Kecil -->
+    <LinearLayout
+        android:id="@+id/tabContainerWrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Daftar Schedule"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/kalender_keg" />
+        android:background="@drawable/tab_container_bg"
+        android:orientation="horizontal"
+        android:padding="3dp"
+        app:layout_constraintTop_toBottomOf="@id/kalender_keg"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <!-- Tambahkan SwipeRefreshLayout -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
+        <!-- Tab Daftar Schedule - Ukuran Lebih Kecil -->
+        <TextView
+            android:id="@+id/tabDaftarSchedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daftar Schedule"
+            android:textSize="12sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/tab_selected_pill"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center" />
+
+        <!-- Tab Schedule Assist - Ukuran Lebih Kecil -->
+        <TextView
+            android:id="@+id/tabScheduleAssist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Schedule Assist"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:background="@drawable/tab_unselected_pill"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:layout_marginStart="3dp" />
+
+    </LinearLayout>
+
+    <!-- Container untuk konten yang bisa di-switch -->
+    <FrameLayout
+        android:id="@+id/contentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/tx1"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tabContainerWrapper"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerSchedules"
+        <!-- SwipeRefreshLayout untuk Daftar Schedule -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_schedule" />
+            android:visibility="visible">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSchedules"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                tools:listitem="@layout/item_schedule" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Container untuk Schedule Assist (awalnya hidden) -->
+        <!-- Container untuk Schedule Assist (awalnya hidden) -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshAssist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerAssist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                tools:listitem="@layout/item_schedule_assist" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

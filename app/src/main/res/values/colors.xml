@@ -8,4 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#2196F3</color>
+
+    <!-- Tambahkan colors untuk tab -->
+    <color name="tab_unselected_text">#666666</color>
+    <color name="tab_selected_bg">#5A9FD4</color>
+    <color name="tab_container_bg">#E8E8E8</color>
 </resources>

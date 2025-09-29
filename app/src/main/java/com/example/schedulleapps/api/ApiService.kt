@@ -4,6 +4,7 @@ import com.example.schedulleapps.auth.LoginRequest
 import com.example.schedulleapps.auth.LoginResponse
 import com.example.schedulleapps.auth.RegisterRequest
 import com.example.schedulleapps.auth.RegisterResponse
+import com.example.schedulleapps.model.AssistResponse
 import com.example.schedulleapps.model.ProfileResponse
 import com.example.schedulleapps.model.ScheduleResponse
 import com.example.schedulleapps.model.UpdateScheduleRequest
@@ -58,5 +59,9 @@ interface ApiService {
         @Part photo: MultipartBody.Part? // untuk upload foto opsional
     ): Call<ProfileResponse>
 
+    @GET("assist")
+    fun getAssists(
+        @Header("Authorization") token: String
+    ): Call<AssistResponse>
 
 }
