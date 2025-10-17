@@ -5,17 +5,157 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <CalendarView
-        android:id="@+id/kalender_keg"
+    <!-- Statistics Cards Container -->
+    <LinearLayout
+        android:id="@+id/statisticsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:showWeekNumber="false"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:weightSum="2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Card 1: Total Jam Fotografer -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            android:backgroundTint="#4CAF50">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvTotalJamFotografer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jam Fotografer"
+                    android:textSize="12sp"
+                    android:textColor="#E8F5E9"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card 2: Total Match Assist -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            android:backgroundTint="#2196F3">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvTotalMatchAssist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Match Assist"
+                    android:textSize="12sp"
+                    android:textColor="#E3F2FD"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+    <!-- Header Bulan dengan Navigation -->
+    <LinearLayout
+        android:layout_marginHorizontal="16dp"
+        android:id="@+id/monthHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
         android:background="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/statisticsContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Button Previous Month -->
+        <ImageButton
+            android:id="@+id/btnPreviousMonth"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_left"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Previous Month" />
+
+        <!-- Text Bulan & Tahun -->
+        <TextView
+            android:id="@+id/tvMonthYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="January 2025"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:gravity="center" />
+
+        <!-- Button Next Month -->
+        <ImageButton
+            android:id="@+id/btnNextMonth"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_right"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Next Month" />
+    </LinearLayout>
+
+    <!-- Kizitonwose Calendar View -->
+    <com.kizitonwose.calendar.view.CalendarView
+        android:id="@+id/kalender_keg"
+        android:layout_marginHorizontal="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:cv_dayViewResource="@layout/calendar_day_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/monthHeader" />
 
-    <!-- Container Tab dengan Background Pills - Ukuran Lebih Kecil -->
+    <!-- Container Tab dengan Background Pills -->
     <LinearLayout
         android:id="@+id/tabContainerWrapper"
         android:layout_width="wrap_content"
@@ -28,7 +168,7 @@
         app:layout_constraintTop_toBottomOf="@id/kalender_keg"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Tab Daftar Schedule - Ukuran Lebih Kecil -->
+        <!-- Tab Daftar Schedule -->
         <TextView
             android:id="@+id/tabDaftarSchedule"
             android:layout_width="wrap_content"
@@ -45,7 +185,7 @@
             android:focusable="true"
             android:gravity="center" />
 
-        <!-- Tab Schedule Assist - Ukuran Lebih Kecil -->
+        <!-- Tab Schedule Assist -->
         <TextView
             android:id="@+id/tabScheduleAssist"
             android:layout_width="wrap_content"
@@ -96,8 +236,7 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <!-- Container untuk Schedule Assist (awalnya hidden) -->
-        <!-- Container untuk Schedule Assist (awalnya hidden) -->
+        <!-- Container untuk Schedule Assist -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshAssist"
             android:layout_width="match_parent"
@@ -113,7 +252,6 @@
                 tools:listitem="@layout/item_schedule_assist" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
     </FrameLayout>
 

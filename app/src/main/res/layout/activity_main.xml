@@ -44,7 +44,7 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:background="#E3F2FD"
-                    tools:srcCompat="@tools:sample/avatars" />
+                    tools:srcCompat="@drawable/profil" />
 
             </androidx.cardview.widget.CardView>
 

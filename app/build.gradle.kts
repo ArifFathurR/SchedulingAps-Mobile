@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.schedulleapps"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -56,4 +56,6 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     // WorkManager untuk background tasks notifikasi
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("com.kizitonwose.calendar:view:2.4.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

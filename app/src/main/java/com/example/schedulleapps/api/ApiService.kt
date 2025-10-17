@@ -7,6 +7,7 @@ import com.example.schedulleapps.auth.RegisterResponse
 import com.example.schedulleapps.model.AssistResponse
 import com.example.schedulleapps.model.ProfileResponse
 import com.example.schedulleapps.model.ScheduleResponse
+import com.example.schedulleapps.model.TotalJamFotograferResponse
 import com.example.schedulleapps.model.UpdateScheduleRequest
 import com.example.schedulleapps.model.UpdateScheduleResponse
 import retrofit2.Call
@@ -63,5 +64,10 @@ interface ApiService {
     fun getAssists(
         @Header("Authorization") token: String
     ): Call<AssistResponse>
+
+    @GET("total-jam-fotografer")
+    fun getTotalJamFotografer(
+        @Header("Authorization") token: String
+    ) : Call<TotalJamFotograferResponse>
 
 }
